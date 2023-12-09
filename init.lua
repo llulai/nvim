@@ -113,7 +113,9 @@ require('lazy').setup({
       },
     },
   },
-
+  {
+    'petobens/colorish',
+  },
   {
     -- Theme inspired by Atom
     'navarasu/onedark.nvim',
@@ -138,7 +140,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'neverland',
         component_separators = '|',
         section_separators = '',
       },
@@ -150,9 +152,10 @@ require('lazy').setup({
     'lukas-reineke/indent-blankline.nvim',
     -- Enable `lukas-reineke/indent-blankline.nvim`
     -- See `:help indent_blankline.txt`
+    main = 'ibl',
     opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
+      indent = { char = '┊' },
+      --show_trailing_blankline_indent = false,
     },
   },
 
@@ -214,6 +217,9 @@ vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
+
+-- Make relativenumbers default
+vim.wo.relativenumber = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -306,10 +312,33 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'svelte', 'vimdoc', 'vim' },
+  ensure_installed = {
+    --basic
+    'c',
+    'cpp',
+    'vimdoc',
+    'vim',
+
+    --back-end
+    'go',
+    'lua',
+    'python',
+    'rust',
+
+    --front-end
+    'tsx',
+    'typescript',
+    'svelte',
+
+    --web
+    'html',
+    'css',
+    'javascript',
+    'json'
+  },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-  auto_install = false,
+  auto_install = true,
 
   highlight = { enable = true },
   indent = { enable = true, disable = { 'python' } },
@@ -504,7 +533,6 @@ vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
 vim.keymap.set("n", "<C-j>", function() ui.nav_file(1) end)
 vim.keymap.set("n", "<C-k>", function() ui.nav_file(2) end)
 vim.keymap.set("n", "<C-l>", function() ui.nav_file(3) end)
-vim.keymap.set("n", "<C-;>", function() ui.nav_file(4) end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
