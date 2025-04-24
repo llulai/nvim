@@ -129,9 +129,9 @@ require('lazy').setup({
     'nvim-lua/plenary.nvim'
   },
 
-  {
-    'ThePrimeagen/harpoon'
-  },
+  -- {
+  --   'ThePrimeagen/harpoon'
+  -- },
 
   {
     -- Set lualine as statusline
@@ -205,7 +205,7 @@ require('lazy').setup({
   },
 
   -- ai code
-  { 'codota/tabnine-nvim', build = "./dl_binaries.sh" },
+  { 'codota/tabnine-nvim',    build = "./dl_binaries.sh" },
 
   --[[ {
     -- vim copilot
@@ -226,7 +226,7 @@ require('lazy').setup({
   --
   --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
   --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
-  { import = 'custom.plugins' },
+  -- { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -470,6 +470,7 @@ local servers = {
   -- pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
+  angularls = {},
 
   lua_ls = {
     Lua = {
@@ -532,35 +533,46 @@ cmp.setup {
   },
 }
 
-local mark = require("harpoon.mark")
-local ui = require("harpoon.ui")
-
-vim.keymap.set("n", "<leader>a", mark.add_file)
-vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
-
-vim.keymap.set("n", "<C-j>", function() ui.nav_file(1) end)
-vim.keymap.set("n", "<C-k>", function() ui.nav_file(2) end)
-vim.keymap.set("n", "<C-l>", function() ui.nav_file(3) end)
+-- local mark = require("harpoon.mark")
+-- local ui = require("harpoon.ui")
+--
+-- vim.keymap.set("n", "<leader>a", mark.add_file)
+-- vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
+--
+-- vim.keymap.set("n", "<C-j>", function() ui.nav_file(1) end)
+-- vim.keymap.set("n", "<C-k>", function() ui.nav_file(2) end)
+-- vim.keymap.set("n", "<C-l>", function() ui.nav_file(3) end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
 vim.lsp.handlers["textDocument/definition"] = function(err, result, ctx, config)
-    if not result or vim.tbl_isempty(result) then
-        vim.notify("No definition found")
-        return
-    end
-    vim.lsp.util.jump_to_location(result[1])  -- Jump to the first result
+  if not result or vim.tbl_isempty(result) then
+    vim.notify("No definition found")
+    return
+  end
+  vim.lsp.util.jump_to_location(result[1])   -- Jump to the first result
 end
 
 require('tabnine').setup({
-  disable_auto_comment=true,
-  accept_keymap="<Tab>",
+  disable_auto_comment = true,
+  accept_keymap = "<Tab>",
   dismiss_keymap = "<C-]>",
   debounce_ms = 800,
-  suggestion_color = {gui = "#808080", cterm = 244},
-  exclude_filetypes = {"TelescopePrompt", "NvimTree"},
+  suggestion_color = { gui = "#808080", cterm = 244 },
+  exclude_filetypes = { "TelescopePrompt", "NvimTree" },
   log_file_path = nil, -- absolute path to Tabnine log file
   ignore_certificate_errors = false,
 })
+
 vim.opt.relativenumber = true
+
+vim.o.tabstop = 4
+
+
+local angular_jump = require("custom.plugins.angular_jump")
+
+vim.keymap.set("n", "<C-j>", angular_jump.goto_ts, { desc = "Go to TS file" })
+vim.keymap.set("n", "<C-k>", angular_jump.goto_html, { desc = "Go to HTML file" })
+vim.keymap.set("n", "<C-l>", angular_jump.goto_css, { desc = "Go to CSS file" })
+
