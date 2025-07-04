@@ -19,7 +19,7 @@ M.goto_html = function()
 end
 
 M.goto_css = function()
-  switch_to_extension("css")
+  switch_to_extension("scss")
 end
 
 return M

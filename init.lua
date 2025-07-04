@@ -295,6 +295,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+-- [[ MDX file type detection ]]
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.mdx',
+  callback = function()
+    vim.bo.filetype = 'markdown'
+  end,
+})
+
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 local actions = require('telescope/actions')
@@ -331,6 +339,7 @@ vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { de
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[S]earch [B]uffers' })
+vim.keymap.set('n', '<leader>sq', require('telescope.builtin').quickfix, { desc = '[S]earch [Q]uickfix' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -355,10 +364,12 @@ require('nvim-treesitter.configs').setup {
     'svelte',
 
     --web
-    --'html',
+    'html',
     'css',
+    'scss',
     'javascript',
-    'json'
+    'json',
+    'markdown'
   },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
@@ -411,6 +422,9 @@ require('nvim-treesitter.configs').setup {
     },
   },
 }
+
+-- Configure Treesitter to parse MDX files as markdown
+vim.treesitter.language.register('markdown', 'mdx')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
