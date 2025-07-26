@@ -129,6 +129,39 @@ require('lazy').setup({
     'nvim-lua/plenary.nvim'
   },
 
+  {
+    "nvimtools/none-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup({
+        sources = {
+          -- Your existing prettier config
+          null_ls.builtins.formatting.prettier.with({
+            filetypes = {
+              "javascript",
+              "typescript",
+              "css",
+              "scss",
+              "html",
+              "json",
+              "yaml",
+              "markdown",
+              "graphql",
+              "svelte",
+              "typescriptreact",
+              "javascriptreact",
+            },
+          }),
+          -- Add stylelint for SCSS/CSS diagnostics
+          null_ls.builtins.diagnostics.stylelint.with({
+            filetypes = { "css", "scss", "sass" },
+          }),
+        },
+      })
+    end,
+  },
+
   -- {
   --   'ThePrimeagen/harpoon'
   -- },
@@ -305,7 +338,7 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
-local actions = require('telescope/actions')
+local actions = require('telescope.actions')
 require('telescope').setup {
   defaults = {
     mappings = {
@@ -478,14 +511,7 @@ end
 --
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
-local servers = {
-  -- clangd = {},
-  -- gopls = {},
-  -- pyright = {},
-  -- rust_analyzer = {},
-  -- tsserver = {},
-  angularls = {},
-
+local server_settings = {
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -505,15 +531,66 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
+  ensure_installed = {
+    "angularls",
+    "html",
+    "cssls",
+    "emmet_ls",
+    "lua_ls",
+  },
 }
 
 mason_lspconfig.setup_handlers {
   function(server_name)
-    require('lspconfig')[server_name].setup {
+    local config = {
       capabilities = capabilities,
       on_attach = on_attach,
-      settings = servers[server_name],
+      settings = server_settings[server_name] or {},
+    }
+
+    require('lspconfig')[server_name].setup(config)
+  end,
+
+  -- Override specific servers with custom config
+  ["angularls"] = function()
+    require('lspconfig').angularls.setup {
+      capabilities = capabilities,
+      on_attach = on_attach,
+      filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+      root_dir = require("lspconfig.util").root_pattern("angular.json", "project.json"),
+    }
+  end,
+
+  ["emmet_ls"] = function()
+    require('lspconfig').emmet_ls.setup {
+      capabilities = capabilities,
+      on_attach = on_attach,
+      filetypes = { "html", "css", "scss", "javascriptreact", "typescriptreact" },
+    }
+  end,
+
+  ["cssls"] = function()
+    require('lspconfig').cssls.setup {
+      capabilities = capabilities,
+      on_attach = on_attach,
+      settings = {
+        css = {
+          validate = true,
+          lint = {
+            unknownProperties = "error",  -- This will catch 'sdfd' as invalid
+            validProperties = {},
+            invalidProperties = {},
+          }
+        },
+        scss = {
+          validate = true,
+          lint = {
+            unknownProperties = "error",
+            validProperties = {},
+            invalidProperties = {},
+          }
+        },
+      },
     }
   end,
 }
