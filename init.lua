@@ -41,6 +41,10 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Disable netrw (use oil.nvim instead)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -234,15 +238,34 @@ require('lazy').setup({
   {
     -- dressing
     'stevearc/dressing.nvim',
-    opts = {},
+    opts = {
+      select = {
+        backend = { "builtin" },
+      },
+    },
   },
 
   -- ai code
   { 'codota/tabnine-nvim',    build = "./dl_binaries.sh" },
 
+  {
+    'stevearc/oil.nvim',
+    lazy = false,
+    opts = {
+      default_file_explorer = true,
+    },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function(_, opts)
+      require('oil').setup(opts)
+
+      -- Set keymap
+      vim.keymap.set('n', '<leader>ef', '<cmd>Oil<cr>', { desc = 'Open Oil file explorer' })
+    end,
+  },
 
   {
     "zbirenbaum/copilot.lua",
+    enabled = false,
     cmd = "Copilot",
     build = ":Copilot auth",
     event = "BufReadPost",
@@ -563,9 +586,7 @@ mason_lspconfig.setup {
     "emmet_ls",
     "lua_ls",
   },
-}
-
-mason_lspconfig.setup_handlers {
+  handlers = {
   function(server_name)
     local config = {
       capabilities = capabilities,
@@ -618,6 +639,7 @@ mason_lspconfig.setup_handlers {
       },
     }
   end,
+  },
 }
 
 -- nvim-cmp setup
