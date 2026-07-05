@@ -117,16 +117,42 @@ require('lazy').setup({
       },
     },
   },
+  -- {
+  --   'zootedb0t/citruszest.nvim',
+  -- },
+  -- {
+  --   -- Theme inspired by Atom
+  --   'navarasu/onedark.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'citruszest'
+  --   end,
+  -- },
+
+
+  -- lua/plugins/rose-pine.lua
   {
-    'zootedb0t/citruszest.nvim',
-  },
-  {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
+    "rose-pine/neovim",
+    name = "rose-pine",
     config = function()
-      vim.cmd.colorscheme 'citruszest'
-    end,
+      require("rose-pine").setup({
+        variant = "moon",
+        dark_variant = "moon",
+        dim_inactive_windows = false,
+        extend_background_behind_borders = true,
+        enable = {
+            terminal = true,
+            legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+            migrations = true, -- Handle deprecated options automatically
+        },
+        styles = {
+            bold = true,
+            italic = true,
+            transparency = true,
+        },
+      })
+      vim.cmd("colorscheme rose-pine")
+    end
   },
 
   {
@@ -286,7 +312,30 @@ require('lazy').setup({
         help = true,
       },
     },
+  },
+
+  {
+    "karb94/neoscroll.nvim",
+    config = function()
+      local neoscroll = require('neoscroll')
+      local keymap = {
+        ["<C-b>"] = function() neoscroll.ctrl_b({ duration = 150 }) end;
+        ["<C-f>"] = function() neoscroll.ctrl_f({ duration = 150 }) end;
+
+        ["<C-u>"] = function() neoscroll.ctrl_u({ duration = 150 }) end;
+        ["<C-d>"] = function() neoscroll.ctrl_d({ duration = 150 }) end;
+
+        ["zt"]    = function() neoscroll.zt({ half_win_duration = 150 }) end;
+        ["zz"]    = function() neoscroll.zz({ half_win_duration = 150 }) end;
+        ["zb"]    = function() neoscroll.zb({ half_win_duration = 150 }) end;
+      }
+      local modes = { 'n', 'v', 'x' }
+      for key, func in pairs(keymap) do
+        vim.keymap.set(modes, key, func)
+      end
+    end
   }
+
 
   --[[ {
     -- vim copilot
